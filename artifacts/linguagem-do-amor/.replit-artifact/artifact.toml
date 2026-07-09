@@ -1,0 +1,27 @@
+kind = "web"
+previewPath = "/"
+title = "Descubra sua Linguagem do Amor"
+version = "1.0.0"
+id = "artifacts/linguagem-do-amor"
+router = "path"
+
+[[services]]
+name = "web"
+paths = [ "/" ]
+localPort = 24844
+
+[services.development]
+run = "pnpm --filter @workspace/linguagem-do-amor run dev"
+
+[services.production]
+build = [ "pnpm", "--filter", "@workspace/linguagem-do-amor", "run", "build" ]
+serve = "static"
+publicDir = "artifacts/linguagem-do-amor/dist/public"
+
+[[services.production.rewrites]]
+from = "/*"
+to = "/index.html"
+
+[services.env]
+PORT = "24844"
+BASE_PATH = "/"

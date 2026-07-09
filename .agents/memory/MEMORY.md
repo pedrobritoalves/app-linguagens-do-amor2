@@ -1,0 +1,1 @@
+- [Bolt frontend-only port: Tailwind v3 wiring](bolt-tailwind-v3-postcss.md) — after copy-frontend script, remove `@tailwindcss/vite` and don't duplicate postcss config in both vite.config.ts and postcss.config.js.
