@@ -5,11 +5,14 @@ import WelcomeScreen from './components/WelcomeScreen';
 import QuizScreen from './components/QuizScreen';
 import ResultsScreen from './components/ResultsScreen';
 import CoupleResultsScreen from './components/CoupleResultsScreen';
+import JourneyScreen from './components/JourneyScreen';
+import CertificateScreen from './components/CertificateScreen';
+import { type PlanType } from './components/PremiumSection';
 import { questionsMale, questionsFemale } from './questions';
 import { type LoveLanguageKey } from './loveLanguages';
 import { type Gender, type Mode, themes } from './theme';
 
-type Screen = 'welcome' | 'quiz' | 'results';
+type Screen = 'welcome' | 'quiz' | 'results' | 'journey' | 'certificate';
 
 const STORAGE_KEY = 'linguagem-do-amor:resultado';
 
@@ -46,6 +49,7 @@ export default function App() {
   const [gender, setGender] = useState<Gender>('female');
   const [couplePhase, setCouplePhase] = useState<0 | 1 | 2>(0);
   const [coupleResults, setCoupleResults] = useState<CoupleResult[]>([]);
+  const [journeyLanguage, setJourneyLanguage] = useState<LoveLanguageKey>('affirmation');
 
   const activeQuestions = questionsForGender(gender);
   const activeTheme = themes[gender];
@@ -134,15 +138,29 @@ export default function App() {
     setCurrentQuestion(0);
   }, []);
 
+  const handleUnlockPremium = useCallback(
+    (_plan: PlanType, primaryLanguage: LoveLanguageKey) => {
+      setJourneyLanguage(primaryLanguage);
+      setScreen('journey');
+    },
+    [],
+  );
+
+  const handleJourneyComplete = useCallback(() => {
+    setScreen('certificate');
+  }, []);
+
   // Determinar tema de fundo da página
   const pageBg =
-    mode === 'couple'
-      ? couplePhase === 1
-        ? themes.male.pageBg
-        : couplePhase === 0
-          ? themes.female.pageBg
-          : 'from-rose-50 via-sand-50 to-white'
-      : activeTheme.pageBg;
+    screen === 'journey' || screen === 'certificate'
+      ? 'from-amber-50 via-sand-50 to-white'
+      : mode === 'couple'
+        ? couplePhase === 1
+          ? themes.male.pageBg
+          : couplePhase === 0
+            ? themes.female.pageBg
+            : 'from-rose-50 via-sand-50 to-white'
+        : activeTheme.pageBg;
 
   const quizSubtitle =
     mode === 'couple'
@@ -180,7 +198,11 @@ export default function App() {
           />
         )}
         {screen === 'results' && mode === 'couple' && (
-          <CoupleResultsScreen results={coupleResults} onHome={handleHome} />
+          <CoupleResultsScreen
+            results={coupleResults}
+            onHome={handleHome}
+            onUnlockPremium={handleUnlockPremium}
+          />
         )}
         {screen === 'results' && mode === 'single' && (
           <ResultsScreen
@@ -188,12 +210,26 @@ export default function App() {
             totalQuestions={activeQuestions.length}
             gender={gender}
             onHome={handleHome}
+            onUnlockPremium={handleUnlockPremium}
+          />
+        )}
+        {screen === 'journey' && (
+          <JourneyScreen
+            primaryLanguage={journeyLanguage}
+            onHome={handleHome}
+            onComplete={handleJourneyComplete}
+          />
+        )}
+        {screen === 'certificate' && (
+          <CertificateScreen
+            primaryLanguage={journeyLanguage}
+            onHome={handleHome}
           />
         )}
       </div>
 
       {/* Rodapé mínimo na tela inicial/resultado */}
-      {screen !== 'quiz' && (
+      {screen !== 'quiz' && screen !== 'journey' && screen !== 'certificate' && (
         <footer className="relative z-10 mx-auto max-w-2xl px-6 pb-8 text-center">
           <p className="inline-flex items-center gap-1.5 text-xs text-sand-500">
             Feito com <Heart className="h-3.5 w-3.5 text-rose-400" fill="currentColor" /> para o

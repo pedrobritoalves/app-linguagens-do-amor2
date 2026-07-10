@@ -18,6 +18,7 @@ import {
 } from '../loveLanguages';
 import { themes, genderLabels, genderEmoji } from '../theme';
 import ContributeButton from './ContributeButton';
+import PremiumSection, { type PlanType } from './PremiumSection';
 
 interface PersonResult {
   scores: Record<LoveLanguageKey, number>;
@@ -28,6 +29,7 @@ interface PersonResult {
 interface Props {
   results: PersonResult[];
   onHome: () => void;
+  onUnlockPremium: (plan: PlanType, primaryLanguage: LoveLanguageKey) => void;
 }
 
 const coupleColorAccent = (gender: Gender) =>
@@ -44,7 +46,7 @@ function getTopKey(scores: Record<LoveLanguageKey, number>): LoveLanguageKey {
   return ranked[0].key;
 }
 
-export default function CoupleResultsScreen({ results, onHome }: Props) {
+export default function CoupleResultsScreen({ results, onHome, onUnlockPremium }: Props) {
   const [copied, setCopied] = useState(false);
   const [openInsight, setOpenInsight] = useState<LoveLanguageKey | null>(null);
 
@@ -277,6 +279,13 @@ export default function CoupleResultsScreen({ results, onHome }: Props) {
           );
         })}
       </div>
+
+      {/* Seção Premium */}
+      <PremiumSection
+        primaryLanguage={herTop}
+        coupleMode={true}
+        onUnlock={(plan) => onUnlockPremium(plan, herTop)}
+      />
 
       {/* Botões de ação */}
       <div className="animate-fade-in-up mb-4 grid grid-cols-1 gap-3 sm:grid-cols-3">

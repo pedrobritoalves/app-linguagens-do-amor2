@@ -18,12 +18,14 @@ import {
 import { loveLanguages, loveLanguageOrder, genderContent, type LoveLanguageKey, type Gender } from '../loveLanguages';
 import { themes } from '../theme';
 import ContributeButton from './ContributeButton';
+import PremiumSection, { type PlanType } from './PremiumSection';
 
 interface Props {
   scores: Record<LoveLanguageKey, number>;
   totalQuestions: number;
   gender: Gender;
   onHome: () => void;
+  onUnlockPremium: (plan: PlanType, primaryLanguage: LoveLanguageKey) => void;
 }
 
 const iconMap: Record<string, LucideIcon> = {
@@ -34,7 +36,7 @@ const iconMap: Record<string, LucideIcon> = {
   HandHeart,
 };
 
-export default function ResultsScreen({ scores, totalQuestions, gender, onHome }: Props) {
+export default function ResultsScreen({ scores, totalQuestions, gender, onHome, onUnlockPremium }: Props) {
   const [copied, setCopied] = useState(false);
   const [openLang, setOpenLang] = useState<LoveLanguageKey | null>(null);
 
@@ -306,6 +308,13 @@ export default function ResultsScreen({ scores, totalQuestions, gender, onHome }
           );
         })}
       </div>
+
+      {/* Seção Premium */}
+      <PremiumSection
+        primaryLanguage={primary[0]}
+        coupleMode={false}
+        onUnlock={(plan) => onUnlockPremium(plan, primary[0])}
+      />
 
       {/* Botões de ação */}
       <div className="animate-fade-in-up mb-4 grid grid-cols-1 gap-3 sm:grid-cols-3">
